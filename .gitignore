@@ -3,3 +3,9 @@ backups
 ac-comphist.dat
 backup
 url
+\#*
+.smex-items
+places
+elpa/archives/
+elpa/archives/*
+elpa/archives/marmalade/archive-contents

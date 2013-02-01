@@ -1,23 +1,3 @@
-(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-
-(unless (require 'el-get nil 'noerror)
-  (with-current-buffer
-      (url-retrieve-synchronously
-       "https://raw.github.com/dimitri/el-get/master/el-get-install.el")
-    (let (el-get-master-branch)
-      (goto-char (point-max))
-      (eval-print-last-sexp))))
-
-(setq jedi:setup-keys t)
-
-(el-get 'sync)
-
-
-(add-hook 'python-mode-hook 'jedi:setup)
-
-
-
-
 (require 'package)
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
@@ -38,10 +18,82 @@
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
+(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+(unless (require 'el-get nil 'noerror)
+  (with-current-buffer
+      (url-retrieve-synchronously
+       "https://raw.github.com/dimitri/el-get/master/el-get-install.el")
+    (let (el-get-master-branch)
+      (goto-char (point-max))
+      (eval-print-last-sexp))))
+
+(setq jedi:setup-keys t)
+
+(el-get 'sync)
+
+(add-hook 'python-mode-hook 'jedi:setup)
+
+(setq lmk-emacs-init-file load-file-name)
+(setq lmk-emacs-config-dir
+      (file-name-directory lmk-emacs-init-file))
+(setq user-emacs-directory lmk-emacs-config-dir)
+(add-to-list 'load-path lmk-emacs-config-dir)
+(setq lmk-secrets-file "~/.emacs.d/lmksecrets.el")
+(setq lmk-functions-file "~/.emacs.d/functions.el")
+(setq lmk-keybindings-file "~/.emacs.d/keybindings.el")
+
+(load lmk-functions-file)
+(load lmk-keybindings-file)
+
+
+(setq backup-directory-alist
+      (list (cons "." (expand-file-name "backup" user-emacs-directory))))
+
+(push "~/envs/default/bin" exec-path)
+(setenv "PATH"
+        (concat
+         "~/envs/default/bin" ":"
+         (getenv "PATH")
+         ))
+
+
+
+(add-to-list 'default-frame-alist '(font . "Inconsolata-11"))
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+
+
+;; M-x shell is a nice shell interface to use, let's make it colorful.  If
+;; you need a terminal emulator rather than just a shell, consider M-x term
+;; instead.
+(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
+(global-auto-revert-mode 1)
+                                        ;(toggle-diredp-find-file-reuse-dir 1)
+(setq compile-command "make")
+(setq redisplay-dont-pause t)
+
+(delete-selection-mode t)
+(setq custom-file (expand-file-name "emacs-customizations.el" lmk-emacs-config-dir))
+(load custom-file)
+(load-theme 'zenburn)
+(set-language-environment "utf-8")
+(add-hook 'before-save-hook 'time-stamp)
+(setq time-stamp-pattern nil)
+(require 'ace-jump-mode)
+(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+(require 'dired-x)
+(require 'dired+)
+(require 'switch-window)
+(require 'saveplace)
+(setq-default save-place t)
+(require 'undo-tree)
+(global-undo-tree-mode)
+(require 'buffer-move)
 
 ;; autopair and yas in all modes
-(autopair-global-mode)
-(yas-global-mode 1)
+;;(autopair-global-mode)
+;;(yas-global-mode 1)
 
 ;; autocomplete
 (require 'auto-complete-config)
@@ -89,30 +141,21 @@
 
 ;; pyflakes flymake integration
 ;; http://stackoverflow.com/a/1257306/347942
-(when (load "flymake" t)
-  (defun flymake-pyflakes-init ()
-    (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                       'flymake-create-temp-inplace))
-           (local-file (file-relative-name
-                        temp-file
-                        (file-name-directory buffer-file-name))))
-      (list "pycheckers" (list local-file))))
-  (add-to-list 'flymake-allowed-file-name-masks
-               '("\\.py\\'" flymake-pyflakes-init)))
-(add-hook 'python-mode-hook 'flymake-mode)
+;; (when (load "flymake" t)
+;;   (defun flymake-pyflakes-init ()
+;;     (let* ((temp-file (flymake-init-create-temp-buffer-copy
+;;                        'flymake-create-temp-inplace))
+;;            (local-file (file-relative-name
+;;                         temp-file
+;;                         (file-name-directory buffer-file-name))))
+;;       (list "pycheckers" (list local-file))))
+;;   (add-to-list 'flymake-allowed-file-name-masks
+;;                '("\\.py\\'" flymake-pyflakes-init)))
+;; (add-hook 'python-mode-hook 'flymake-mode)
+(setq tramp-shell-prompt-pattern "^[^$>\n]*[#$%>] *\\(\[[0-9;]*[a-zA-Z] *\\)*")
+(require 'tramp)
+(setq tramp-default-method "ssh")
 
-;; menu bar is useful when getting started
-(menu-bar-mode)
 (setq-default default-tab-width 4)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "27470eddcaeb3507eca2760710cc7c43f1b53854372592a3afa008268bcf7a75" default))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
+

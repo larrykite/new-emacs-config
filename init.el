@@ -18,6 +18,7 @@
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
+
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 (unless (require 'el-get nil 'noerror)
   (with-current-buffer
@@ -56,8 +57,6 @@
          (getenv "PATH")
          ))
 
-
-
 (add-to-list 'default-frame-alist '(font . "Inconsolata-11"))
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 
@@ -90,6 +89,10 @@
 (require 'undo-tree)
 (global-undo-tree-mode)
 (require 'buffer-move)
+(require 'fill-column-indicator)
+;;(define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
+;;(global-fci-mode 1)
+(add-hook 'python-mode-hook 'fci-mode)
 
 ;; autopair and yas in all modes
 ;;(autopair-global-mode)

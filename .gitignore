@@ -9,3 +9,9 @@ places
 elpa/archives/
 elpa/archives/*
 elpa/archives/marmalade/archive-contents
+*.elc
+semanticdb/
+eshell/
+\%*
+.*DS_Store
+*.old
